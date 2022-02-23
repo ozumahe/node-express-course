@@ -1,33 +1,52 @@
 const Tasks = require("../module/task");
+const asyncWrapper = require("../middleware/async");
+const { createCustomError } = require("../errors/custom-error");
 
-const getAllTask = async (req, res) => {
-  try {
-    const tasks = await Tasks.find({});
-    res.status(200).json({ tasks });
-  } catch (error) {
-    res.status(500).json({ msg: error.errors.name.message });
+// Get All Task
+const getAllTask = asyncWrapper(async (req, res) => {
+  const tasks = await Tasks.find({});
+  res.status(200).json({ tasks });
+});
+
+// Create Task
+const createTask = asyncWrapper(async (req, res) => {
+  const task = await Tasks.create(req.body);
+  res.status(201).json({ task });
+});
+
+// Get Single Task
+const getTask = asyncWrapper(async (req, res, next) => {
+  const { id: taskID } = req.params;
+  const task = await Tasks.findOne({ _id: taskID });
+
+  if (!task) {
+    return next(createCustomError(`No task id : ${taskID}`, 404));
+    // res.status(404).json({ msg: `No task id : ${taskID}` });
   }
-};
-const createTask = async (req, res) => {
-  try {
-    const task = await Tasks.create(req.body);
-    res.status(201).json({ task });
-  } catch (error) {
-    res.status(500).json({ msg: error.errors.name.message });
+  res.status(200).json({ task });
+});
+
+// Delete Task
+const deleteTask = asyncWrapper(async (req, res) => {
+  const { id: taskID } = req.params;
+  const task = await Tasks.findOneAndDelete({ _id: taskID });
+  if (!task) {
+    return next(createCustomError(`No task id : ${taskID}`, 404));
   }
-};
+  res.status(200).json({ task });
+});
 
-const getTask = (req, res) => {
-  try {
-  } catch (error) {}
-
-  res.json({ id: req.params.id });
-};
-const updateTask = (req, res) => {
-  res.send("update task");
-};
-const deleteTask = (req, res) => {
-  res.send("delete task");
-};
+// Update Task
+const updateTask = asyncWrapper(async (req, res) => {
+  const { id: taskID } = req.params;
+  const task = await Tasks.findOneAndUpdate({ _id: taskID }, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!task) {
+    return next(createCustomError(`No task id : ${taskID}`, 404));
+  }
+  res.status(200).json({ task });
+});
 
 module.exports = { getAllTask, createTask, getTask, updateTask, deleteTask };
