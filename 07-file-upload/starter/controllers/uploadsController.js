@@ -1,6 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const path = require("path");
 const CustomErrors = require("../errors");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
 const uploadImageLocal = async (req, res) => {
   if (!req.files) {
@@ -33,7 +35,15 @@ const uploadImageLocal = async (req, res) => {
 };
 
 const uploadImage = async (req, res) => {
-  res.status(StatusCodes.OK).send("Upload Image");
+  const result = await cloudinary.uploader.upload(
+    req.files.image.tempFilePath,
+    {
+      use_filename: true,
+      folder: "tutorial-image",
+    }
+  );
+  fs.unlinkSync(req.files.image.tempFilePath);
+  return res.status(StatusCodes.OK).json({ image: { url: result.secure_url } });
 };
 
 module.exports = { uploadImage };
