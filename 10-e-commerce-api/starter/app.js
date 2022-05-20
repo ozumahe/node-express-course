@@ -20,13 +20,14 @@ const errorHnadlerMiddleware = require("./middleware/error-handler");
 
 app.use(morgan("tiny"));
 app.use(express.json());
-app.use(cookiesPhaser());
+app.use(cookiesPhaser(process.env.JWT_SECRET));
 
 app.get("/", (req, res) => {
   res.send("E commercce api");
 });
 app.get("/api/v1", (req, res) => {
-  console.log(req.cookies);
+  // console.log(req.cookies);
+  console.log(req.signedCookies);
   res.send("E commercce api");
 });
 
