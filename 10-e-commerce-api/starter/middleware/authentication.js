@@ -17,4 +17,21 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticateUser };
+// const authenticatePermission = async (req, res, next) => {
+//   if (req.user.role !== "admin") {
+//     // console.log("Not an Admin");
+//     throw new Errors.UnauthorizedError("Unauthorized to access this route");
+//   }
+//   next();
+// };
+
+const authenticatePermission = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      throw new Errors.UnauthorizedError("You are Not Permited to this Route");
+    }
+    next();
+  };
+};
+
+module.exports = { authenticateUser, authenticatePermission };
