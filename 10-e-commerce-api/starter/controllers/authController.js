@@ -8,6 +8,7 @@ const {
   createTokenUser,
 } = require("../utils");
 
+// Register
 const register = async (req, res) => {
   const { name, email, password } = req.body;
   const emailAlreadyExist = await UserSchema.findOne({ email });
@@ -32,6 +33,7 @@ const register = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
 
+// Login
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -57,6 +59,7 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
+// Logout
 const logout = async (req, res) => {
   res.cookie("token", "logout", {
     expires: new Date(Date.now()),
