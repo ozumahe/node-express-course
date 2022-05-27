@@ -31,6 +31,8 @@ const UserShema = new mongoose.Schema({
 });
 
 UserShema.pre("save", async function () {
+  console.log(this.modifiedPaths());
+  // console.log(this.isMdified("email"));
   const salt = await bcryptjs.genSalt(10);
   this.password = await bcryptjs.hash(this.password, salt);
 });
