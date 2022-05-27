@@ -1,7 +1,12 @@
 const UserSchema = require("../models/UserSchema");
 const { StatusCodes } = require("http-status-codes");
 const Errors = require("../errors");
-const { createJWT, verifyJWT, attachCookiesToResponse } = require("../utils");
+const {
+  createJWT,
+  verifyJWT,
+  attachCookiesToResponse,
+  createTokenUser,
+} = require("../utils");
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -13,7 +18,7 @@ const register = async (req, res) => {
 
   const user = await UserSchema.create({ name, email, password });
 
-  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const tokenUser = createTokenUser(user);
   // const token = jwt.sign(tokenUser, "jwtsecret", { expiresIn: "1d" });
   // const token = createJWT({ payload: tokenUser });
   // const oneDay = 1000 * 60 * 60 * 24;
@@ -46,7 +51,7 @@ const login = async (req, res) => {
     throw new Errors.UnauthenticatedError("Invalid Password");
   }
 
-  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const tokenUser = createTokenUser(user);
 
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.OK).json({ user: tokenUser });
