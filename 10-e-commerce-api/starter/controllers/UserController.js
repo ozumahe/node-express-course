@@ -1,7 +1,11 @@
 const UserSchema = require("../models/UserSchema");
 const { StatusCodes } = require("http-status-codes");
 const Error = require("../errors");
-const { createTokenUser, attachCookiesToResponse } = require("../utils");
+const {
+  createTokenUser,
+  attachCookiesToResponse,
+  checkPermissions,
+} = require("../utils");
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -19,7 +23,9 @@ const getSingleUsers = async (req, res) => {
   if (!user) {
     throw new Error.NotFoundError(`No User FOund With Id ${userId}`);
   }
-  res.status(StatusCodes.OK).json(user);
+
+  checkPermissions(req.user, user._id);
+  res.status(StatusCodes.OK).json({ user });
 };
 
 // Show Single User
@@ -48,7 +54,7 @@ const showCurrentUser = async (req, res) => {
 // };
 //
 
-// Update User with save
+// Update User with user.save()
 const updateUser = async (req, res) => {
   const { name, email } = req.body;
   if (!name || !email) {
