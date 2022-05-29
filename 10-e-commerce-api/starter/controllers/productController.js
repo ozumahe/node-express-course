@@ -14,14 +14,22 @@ const createProduct = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ product });
 };
 
-// TODO: Get All Products
+//  Get All Products
 const getAllproducts = async (req, res) => {
-  res.send("Get All Products");
+  const products = await Product.find({});
+
+  res.status(StatusCodes.OK).json({ products });
 };
 
-// TODO: Get Single Product
+//  Get Single Product
 const getSingleProduct = async (req, res) => {
-  res.send("Get Single Product");
+  const { id: productId } = req.params;
+
+  const product = await Product.findOne({ _id: productId });
+  if (!product)
+    throw new Errors.BadRequestError(`No product found with id ${productId}`);
+
+  res.status(StatusCodes.OK).json({ product });
 };
 
 // TODO: Update Product
