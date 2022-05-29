@@ -22,7 +22,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "/uploads/example.jpeg",
     },
-    categoty: {
+    category: {
       type: String,
       required: [true, "Please provide a product category"],
       enum: ["office", "kitchen", "bedroom"],
