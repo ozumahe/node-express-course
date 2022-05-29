@@ -21,13 +21,13 @@ router
   .get(getAllproducts);
 
 router
+  .route("/upload_image")
+  .post([authenticateUser, authenticatePermission("admin")], uploadImage);
+
+router
   .route("/:id")
   .get(getSingleProduct)
   .patch([authenticateUser, authenticatePermission("admin")], updateProduct)
   .delete([authenticateUser, authenticatePermission("admin")], deleteProduct);
-
-router
-  .route("/upload_image")
-  .post([authenticateUser, authenticatePermission("admin")], uploadImage);
 
 module.exports = router;
