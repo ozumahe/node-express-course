@@ -1,6 +1,7 @@
 const Product = require("../models/ProductSchema");
 const Errors = require("../errors");
 const { StatusCodes } = require("http-status-codes");
+const path = require("path");
 
 // Create Product
 const createProduct = async (req, res) => {
@@ -27,24 +28,60 @@ const getSingleProduct = async (req, res) => {
 
   const product = await Product.findOne({ _id: productId });
   if (!product)
-    throw new Errors.BadRequestError(`No product found with id ${productId}`);
+    throw new Errors.NotFoundError(`No product found with id: ${productId}`);
 
   res.status(StatusCodes.OK).json({ product });
 };
 
-// TODO: Update Product
+//  Update Product
 const updateProduct = async (req, res) => {
-  res.send("update Product");
+  const { id: productId } = req.params;
+
+  const product = await Product.findOneAndUpdate({ _id: productId }, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!product)
+    throw new Errors.NotFoundError(`No product found with id: ${productId}`);
+
+  res.status(StatusCodes.OK).send({ product });
 };
 
 // TODO: Delete Product
 const deleteProduct = async (req, res) => {
-  res.send("Delete Product");
+  const { id: productId } = req.params;
+
+  const product = await Product.findOne({ _id: productId });
+  if (!product)
+    throw new Errors.NotFoundError(`No product found with id: ${productId}`);
+
+  await product.remove();
+  res.status(StatusCodes.OK).json({ msg: "Success! product removed" });
 };
 
-// TODO: Upload Image
+// TODO: Upload Imagem
 const uploadImage = async (req, res) => {
-  res.send("Upload Image");
+  if (!req.files) throw new Errors.BadRequestError("No File Uploaded");
+
+  const productImage = req.files.image;
+
+  if (!productImage.mimetype.startsWith("image"))
+    throw new Errors.BadRequestError("Please upload an image");
+
+  const maxSize = 1024 * 1024;
+
+  if (productImage.size > maxSize)
+    throw new Errors.BadRequestError("Plase upload image less than 1kb");
+
+  const imagePath = path.join(
+    __dirname,
+    `../public/uploads/${productImage.name}`
+  );
+
+  await productImage.mv(imagePath);
+
+  res.json({ image: { src: `/uploads/${productImage.name}` } });
 };
 
 module.exports = {
