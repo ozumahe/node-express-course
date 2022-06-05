@@ -70,5 +70,9 @@ productSchema.virtual("reviews", {
   ref: "Review",
   localField: "_id",
   foreignField: "product",
+  justOne: false,
+  // match: {
+  //   rating: 5,
+  // },
 });
 module.exports = mongoose.model("Product", productSchema);
