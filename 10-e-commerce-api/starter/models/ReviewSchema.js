@@ -36,4 +36,12 @@ const ReviewSchema = new mongoose.Schema(
 
 ReviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
+
+ReviewSchema.post("save", async function(){
+  console.log();
+})
+
+
+
+
 module.exports = mongoose.model("Review", ReviewSchema);
