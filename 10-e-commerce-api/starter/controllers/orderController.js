@@ -1,6 +1,20 @@
 const OrderSchema = require("../models/OrderSchema");
+const ProductSchema = require("../models/ProductSchema");
+
+const { StatusCodes } = require("http-status-codes");
+const Error = require("../errors");
+const { checkPermissions } = require("../utils");
 
 const createOrder = async (req, res) => {
+  const { items: cartIttems, tax, shippingFee } = req.body;
+
+  if (!cartIttems || cartIttems.length < 1) {
+    throw new Error.BadRequestError("No cart items provided");
+  }
+
+  if (!tax || !shippingFee) {
+    throw new Error.BadRequestError("Please provide tax and shipping fee");
+  }
   res.send("create Order");
 };
 
