@@ -20,7 +20,7 @@ const createOrder = async (req, res) => {
   let subTotal = [];
 
   for (const item of cartItems) {
-    const dbProduct = await new ProductSchema.findOne({ _id: item.product });
+    const dbProduct = await ProductSchema.findOne({ _id: item.product });
 
     if (!dbProduct) {
       throw new Error.NotFoundError(
