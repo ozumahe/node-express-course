@@ -15,6 +15,7 @@ const createOrder = async (req, res) => {
   if (!tax || !shippingFee) {
     throw new Error.BadRequestError("Please provide tax and shipping fee");
   }
+
   res.send("create Order");
 };
 
