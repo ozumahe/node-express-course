@@ -8,7 +8,7 @@ const { checkPermissions } = require("../utils");
 const createOrder = async (req, res) => {
   const { items: cartItems, tax, shippingFee } = req.body;
 
-  if (!cartIttems || cartIttems.length < 1) {
+  if (!cartItems || cartItems.length < 1) {
     throw new Error.BadRequestError("No cart items provided");
   }
 
