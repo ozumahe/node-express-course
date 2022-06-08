@@ -27,7 +27,12 @@ const createOrder = async (req, res) => {
         `No product found with id: ${item.product}`
       );
     }
+
+    const { name, price, image, _id } = dbProduct;
+
+    console.log(name, price, image);
   }
+
   res.send("create Order");
 };
 
