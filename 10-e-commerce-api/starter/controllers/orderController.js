@@ -73,12 +73,28 @@ const createOrder = async (req, res) => {
     .json({ order, clientSecret: order.clientSecret });
 };
 
+// Get All Orders
 const getAllOrders = async (req, res) => {
-  res.send("Get All Orders");
+  const orders = OrderSchema.find({});
+
+  res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
+
+// Get Single Order
 const getSingleOrder = async (req, res) => {
-  res.send("Get Single Order");
+  const { id: orderId } = req.params;
+
+  const order = OrderSchema.findOne({ _id: orderId });
+
+  if (!order) {
+    throw new Error.NotFoundError(`No product found with id: ${orderId}`);
+  }
+
+  checkPermissions(req.user, order.user);
+
+  res.status(StatusCodes.OK).json({ order });
 };
+
 const getCurrentUserOrder = async (req, res) => {
   res.send("Get Current User Order");
 };
