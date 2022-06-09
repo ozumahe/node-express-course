@@ -5,6 +5,11 @@ const { StatusCodes } = require("http-status-codes");
 const Error = require("../errors");
 const { checkPermissions } = require("../utils");
 
+const fakeStripeApi = ({ amount, currency }) => {
+  const client_secret = "ehuieoshoeheiheeoohee9ieue";
+  return { client_secret, amount };
+};
+
 const createOrder = async (req, res) => {
   const { items: cartItems, tax, shippingFee } = req.body;
 
@@ -30,7 +35,7 @@ const createOrder = async (req, res) => {
 
     const { name, price, image, _id } = dbProduct;
 
-    const singleCartItem = {
+    const singleOrderItem = {
       amount: item.amount,
       name,
       price,
@@ -39,14 +44,27 @@ const createOrder = async (req, res) => {
     };
 
     // add items to order
-    orderItems = [...orderItems, singleCartItem];
+    orderItems = [...orderItems, singleOrderItem];
     // calculate subtotal
     subTotal += item.amount * price;
   }
 
-  console.log(orderItems);
-  console.log(subTotal);
+  // Calculate the total
+  const total = tax + shippingFee + subTotal;
 
+  const paymentIntent = await fakeStripeApi({
+    amount: total,
+    currency: "usd",
+  });
+
+  const order = OrderSchema.create({
+    orderItems,
+    total,
+    subTotal,
+    tax,
+    shippingFee,
+    clientSecret: paymentIntent.client_secret,
+  });
   res.send("create Order");
 };
 
