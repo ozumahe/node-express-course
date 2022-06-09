@@ -22,7 +22,7 @@ const createOrder = async (req, res) => {
   }
 
   let orderItems = [];
-  let subTotal = [];
+  let subtotal = [];
 
   for (const item of cartItems) {
     const dbProduct = await ProductSchema.findOne({ _id: item.product });
@@ -46,26 +46,31 @@ const createOrder = async (req, res) => {
     // add items to order
     orderItems = [...orderItems, singleOrderItem];
     // calculate subtotal
-    subTotal += item.amount * price;
+    subtotal += item.amount * price;
   }
 
   // Calculate the total
-  const total = tax + shippingFee + subTotal;
+  const total = tax + shippingFee + subtotal;
 
   const paymentIntent = await fakeStripeApi({
     amount: total,
     currency: "usd",
   });
 
-  const order = OrderSchema.create({
+  // create order
+  const order = await OrderSchema.create({
     orderItems,
     total,
-    subTotal,
+    subtotal,
     tax,
     shippingFee,
     clientSecret: paymentIntent.client_secret,
+    user: req.user.userId,
   });
-  res.send("create Order");
+
+  res
+    .status(StatusCodes.CREATED)
+    .json({ order, clientSecret: order.clientSecret });
 };
 
 const getAllOrders = async (req, res) => {
