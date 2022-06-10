@@ -84,7 +84,7 @@ const getAllOrders = async (req, res) => {
 const getSingleOrder = async (req, res) => {
   const { id: orderId } = req.params;
 
-  const order = OrderSchema.findOne({ _id: orderId });
+  const order = await OrderSchema.findOne({ _id: orderId });
 
   if (!order) {
     throw new Error.NotFoundError(`No product found with id: ${orderId}`);
@@ -96,7 +96,7 @@ const getSingleOrder = async (req, res) => {
 };
 
 const getCurrentUserOrder = async (req, res) => {
-  const order = OrderSchema.find({ user: req.user.userId });
+  const order = await OrderSchema.find({ user: req.user.userId });
   res.status(StatusCodes.OK).json({ order, count: order.length });
 };
 
@@ -105,7 +105,7 @@ const updateOrder = async (req, res) => {
   const { id: orderId } = req.params;
   const { paymentIntentId } = req.body;
 
-  const order = OrderSchema.findOne({ _id: orderId });
+  const order = await OrderSchema.findOne({ _id: orderId });
 
   if (!order) {
     throw new Error.NotFoundError(`No product found with id: ${orderId}`);
