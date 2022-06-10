@@ -75,7 +75,7 @@ const createOrder = async (req, res) => {
 
 // Get All Orders
 const getAllOrders = async (req, res) => {
-  const orders = OrderSchema.find({});
+  const orders = await OrderSchema.find({});
 
   res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
@@ -96,10 +96,29 @@ const getSingleOrder = async (req, res) => {
 };
 
 const getCurrentUserOrder = async (req, res) => {
-  res.send("Get Current User Order");
+  const order = OrderSchema.find({ user: req.user.userId });
+  res.status(StatusCodes.OK).json({ order, count: order.length });
 };
+
+// Update Order
 const updateOrder = async (req, res) => {
-  res.send("update Order");
+  const { id: orderId } = req.params;
+  const { paymentIntentId } = req.body;
+
+  const order = OrderSchema.findOne({ _id: orderId });
+
+  if (!order) {
+    throw new Error.NotFoundError(`No product found with id: ${orderId}`);
+  }
+
+  checkPermissions(req.user, order.user);
+
+  order.paymentIntentId = paymentIntentId;
+  order.status = "paid";
+
+  await order.save();
+
+  res.status(StatusCodes.OK).json({ order });
 };
 
 module.exports = {
