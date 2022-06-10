@@ -96,7 +96,10 @@ const getSingleOrder = async (req, res) => {
 };
 
 const getCurrentUserOrder = async (req, res) => {
-  const order = await OrderSchema.find({ user: req.user.userId });
+  const order = await OrderSchema.find({ user: req.user.userId }).populate({
+    path: "user",
+    select: "name ",
+  });
   res.status(StatusCodes.OK).json({ order, count: order.length });
 };
 
