@@ -77,3 +77,4 @@ const start = async () => {
 };
 
 start();
+// to start the app
