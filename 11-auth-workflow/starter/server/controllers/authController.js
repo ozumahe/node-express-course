@@ -38,6 +38,15 @@ const register = async (req, res) => {
   // attachCookiesToResponse({ res, user: tokenUser });
   // res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
+
+// VERIFY EMAIL
+const verifyEmail = (req, res) => {
+  const { verificationToken, email } = req.body;
+
+  res.status(StatusCodes.OK).json({ verificationToken, email });
+};
+
+// LOGIN
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -74,4 +83,5 @@ module.exports = {
   register,
   login,
   logout,
+  verifyEmail,
 };
